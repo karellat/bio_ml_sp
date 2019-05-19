@@ -2,6 +2,8 @@ import os
 import sys
 import urllib.request
 
+import pickle
+
 import numpy as np
 from PIL import Image
 
@@ -80,27 +82,73 @@ class MRI_DATA:
         Initializes datasets.
         """
         assert sum(sizes) == 100, "Sum of sizes must equal 100."
-        data = []
+        if os.path.isdir('mri-data'):
+            data = {'images': []}
+            print('Reading data from pickle.')
 
-        for targetpath in ['Alzheimers', 'NonAlzheimers']:
-            if not os.path.isdir(targetpath):
-                print('Missing directory {}.'.format(targetpath))
-                continue
+            print('Images')
+            for filename in os.listdir('mri-data'):
+                if 'images' in filename:
+                    with open(os.path.join('mri-data', filename), 'rb') as pfile:
+                        data['images'].extend(pickle.load(pfile))
+            data['images'] = np.array(data['images'], dtype=np.float16)
 
-            print('Processing directory {}.'.format(targetpath))
-            for filepath in os.listdir(targetpath):
-                dirpath = os.path.join(targetpath, filepath)
-                if not os.path.isdir(dirpath) or filepath.lower().startswith('notinuse'):
-                    print('Skipping directory {}.'.format(dirpath))
+            print('Labels')
+            with open('mri-data/labels.pickle', 'rb') as pfile:
+                data['labels'] = pickle.load(pfile)
+            data['labels'] = np.array(data['labels'])
+
+            print('Categories')
+            with open('mri-data/categories.pickle', 'rb') as pfile:
+                data['categories'] = pickle.load(pfile)
+            data['categories'] = np.array(data['categories'])
+
+        else:
+            data = []
+
+            for targetpath in ['Alzheimers', 'NonAlzheimers']:
+                if not os.path.isdir(targetpath):
+                    print('Missing directory {}.'.format(targetpath))
                     continue
-                
-                print('Processing directory {}.'.format(dirpath))
-                self.LABEL_NAME[self.LABELS] = filepath
-                data.extend(self.loadata(dirpath, self.LABELS))
-                self.LABELS += 1
 
-        print('Processing data.')
-        data = self.process_data(data)
+                print('Processing directory {}.'.format(targetpath))
+                for filepath in os.listdir(targetpath):
+                    dirpath = os.path.join(targetpath, filepath)
+                    if not os.path.isdir(dirpath) or filepath.lower().startswith('notinuse'):
+                        print('Skipping directory {}.'.format(dirpath))
+                        continue
+                    
+                    print('Processing directory {}.'.format(dirpath))
+                    self.LABEL_NAME[self.LABELS] = filepath
+                    data.extend(self.loadata(dirpath, self.LABELS))
+                    self.LABELS += 1
+
+            print('Processing data.')
+            data = self.process_data(data)
+
+            print('Exporting data.')
+            os.mkdir('mri-data')
+
+            print('Images')
+            N = len(data['images'])
+            parts = 8
+            n = N//8
+            for i in range(parts):
+                l = i*n
+                h = (i+1)*n
+                if i == parts-1:
+                    h = N
+
+                with open('mri-data/images-part{}.pickle'.format(i+1), 'wb+') as pfile:
+                    pickle.dump(data['images'][l:h], pfile)
+
+            print('Labels')
+            with open('mri-data/labels.pickle', 'wb+') as pfile:
+                pickle.dump(data['labels'], pfile)
+
+            print('Categories')
+            with open('mri-data/categories.pickle', 'wb+') as pfile:
+                pickle.dump(data['categories'], pfile)
 
         print('Splitting data.')
         last = 0
