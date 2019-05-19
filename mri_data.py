@@ -56,17 +56,31 @@ class MRI_DATA:
 
         return data
 
+    def exchange(self, data, oi, ni):
+        tmp = data[oi]
+        data[oi] = data[ni]
+        data[ni] = tmp
+
     def process_data(self, data, shuffle=True):
         return_value = {'images': [], 'labels': [], 'categories': []}
+        
+        sizes = np.zeros(self.LABELS)
 
         for item in data:
             return_value['images'].append(item[0])
             return_value['labels'].append(item[1])
+            sizes[item[1]] += 1
             return_value['categories'].append(item[2])
 
         for item in ['images', 'labels', 'categories']:
             return_value[item] = np.array(return_value[item])
         
+        for i in range(32):
+            permutation = np.random.permutation(len(return_value['images']))
+            for oi, ni in enumerate(permutation):
+                for data in ['images', 'labels', 'categories']:
+                    self.exchange(return_value[data], oi, ni)
+
         return return_value
 
     def get_part_of_data(self, data, index, length):
