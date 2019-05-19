@@ -2,6 +2,7 @@
 import numpy as np
 import tensorflow as tf
 import tensorflow_hub as tfhub # Note: you need to install tensorflow_hub
+from mri_data import MRI_DATA
 
 class Network:
 
@@ -142,7 +143,7 @@ if __name__ == "__main__":
     ))
 
     # Images
-    images = None #TODO: add data
+    images = MRI_DATA() 
 
     # Network
     network = Network(args)
