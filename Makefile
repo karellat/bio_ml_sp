@@ -1,5 +1,5 @@
 run:
-	python3 model.py ${ARGS}
+	python3 runner.py ${ARGS}
 preprocess: 
 	unzip Alzheimers.zip
 	unzip NonAlzheimers.zip 
