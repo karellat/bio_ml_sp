@@ -42,7 +42,7 @@ class MRI_DATA:
 
     def process_image(self, path, label):
         im = Image.open(path)
-        array = np.array(im, dtype=np.float16) / 255
+        array = np.array(im, dtype=np.float32) / 255
         return (array, label, self.LABEL_NAME[label] != 'NonDemented')
 
     def loadata(self, dirpath, label):
@@ -105,7 +105,7 @@ class MRI_DATA:
                 if 'images' in filename:
                     with open(os.path.join('mri-data', filename), 'rb') as pfile:
                         data['images'].extend(pickle.load(pfile))
-            data['images'] = np.array(data['images'], dtype=np.float16)
+            data['images'] = np.array(data['images'], dtype=np.float32)
 
             print('Labels')
             with open('mri-data/labels.pickle', 'rb') as pfile:
