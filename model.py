@@ -111,5 +111,5 @@ class Network:
                 )
 
     def predict(self, data_images, args):
-        self.model.predict(data_images)
+        return  self.model.predict(data_images)
 
