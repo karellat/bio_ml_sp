@@ -1,7 +1,7 @@
 import os
 import cv2
 
-for oripath in ['NonAlzheimers']: #, 'data_01', 'data_02', 'data_03', 'data_04']:
+for oripath in ['NonAlzheimers', 'Alzheimers']: #, 'data_01', 'data_02', 'data_03', 'data_04']:
     for dirpath2 in os.listdir(oripath):
         for dirpath in os.listdir(os.path.join(oripath,dirpath2)):
             path = os.path.join(oripath,dirpath2, dirpath)
