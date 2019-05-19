@@ -15,7 +15,7 @@ class MRI_DATA:
     class Dataset:
         def __init__(self, data, seed=42):
             self._data = data
-            #self._data["images"] = self._data["images"].astype(np.float32) / 255
+            #self._data["images"] = self._data["images"].astype(np.float16) / 255
             self._size = len(self._data["images"])
 
             #self._shuffler = np.random.RandomState(seed) if shuffle_batches else None
@@ -42,7 +42,7 @@ class MRI_DATA:
 
     def process_image(self, path, label):
         im = Image.open(path)
-        array = np.array(im, dtype=np.float32) / 255
+        array = np.array(im, dtype=np.float16) / 255
         return (array, label, self.LABEL_NAME[label] != 'NonDemented')
 
     def loadata(self, dirpath, label):
@@ -105,7 +105,7 @@ class MRI_DATA:
                 if 'images' in filename:
                     with open(os.path.join('mri-data', filename), 'rb') as pfile:
                         data['images'].extend(pickle.load(pfile))
-            data['images'] = np.array(data['images'], dtype=np.float32)
+            data['images'] = np.array(data['images'], dtype=np.float16)
 
             print('Labels')
             with open('mri-data/labels.pickle', 'rb') as pfile:
