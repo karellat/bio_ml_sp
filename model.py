@@ -67,11 +67,10 @@ class Network:
         flatten = tf.keras.layers.Flatten()(hidden)
         output1 = tf.keras.layers.Dense(args.classes, activation='softmax')(flatten)
 
-        self.tb_callback=tf.keras.callbacks.TensorBoard(args.logdir,
-                update_freq=1000, profile_batch=1)
-        self.tb_callback.on_train_end = lambda *_: None
 
         self.model = tf.keras.Model(inputs=[input1], outputs=[output1])
+        
+        print(self.model.summary())
 
         # Learning rate
         if args.decay is None:
@@ -90,19 +89,25 @@ class Network:
         else:
             learning_rate = None
 
+        self.tb_callback=tf.keras.callbacks.TensorBoard(args.logdir,
+                update_freq=1000, profile_batch=1)
+        self.tb_callback.on_train_end = lambda *_: None
+
         self.model.compile(
                 optimizer=tf.keras.optimizers.Adam(learning_rate=learning_rate),
                 loss=tf.losses.SparseCategoricalCrossentropy(),
-                metrics=[tf.metrics.CategoricalAccuracy()])
+                metrics=[tf.metrics.SparseCategoricalAccuracy()])
 
     def train(self, images, args):
+
         self.model.fit(
                 x = images.train.data["images"],
                 y = images.train.data[args.labels],
                 batch_size=args.batch_size,
                 epochs=args.epochs,
                 validation_data=(images.dev.data["images"],
-                    images.dev.data[args.labels])
+                    images.dev.data[args.labels]),
+                callbacks=[self.tb_callback],
                 )
 
     def predict(self, data_images, args):
