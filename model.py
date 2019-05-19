@@ -4,6 +4,11 @@ import tensorflow as tf
 import tensorflow_hub as tfhub # Note: you need to install tensorflow_hub
 from mri_data import MRI_DATA
 
+print("Version: ", tf.__version__)
+print("Eager mode: ", tf.executing_eagerly())
+print("Hub version: ", tfhub.__version__)
+print("GPU is", "available" if tf.test.is_gpu_available() else "NOT AVAILABLE")
+
 class Network:
 
     @staticmethod
@@ -51,8 +56,8 @@ class Network:
         input1 = tf.keras.layers.Input(shape=[299,299,3])
 
         transfer_model = tfhub.KerasLayer(
-                args.model,
-                output_shape=[args.model_output],
+                "https://tfhub.dev/google/tf2-preview/inception_v3/feature_vector/3",
+                output_shape=[2048],
                 trainable=False)(input1,training=False)
         hidden = transfer_model
 
@@ -60,7 +65,7 @@ class Network:
             hidden = self.get_layer(l, hidden)
 
         flatten = tf.keras.layers.Flatten()(hidden)
-        output1 = tf.keras.layers.Dense(classes, activation='softmax')(flatten)
+        output1 = tf.keras.layers.Dense(args.classes, activation='softmax')(flatten)
 
         self.tb_callback=tf.keras.callbacks.TensorBoard(args.logdir,
                 update_freq=1000, profile_batch=1)
@@ -126,7 +131,8 @@ if __name__ == "__main__":
             type=str, help="Transfer learning model")
     parser.add_argument("--model_output", default=2048,type=int,
         help="Output dim of transfer model")
-    parser.add_argument("--labels", default="labels",type=str)
+    parser.add_argument("--labels", default="categories",type=str)
+    parser.add_argument("--classes", default=2, type=int, help="Number of epochs.")
     args = parser.parse_args()
 
     # Fix random seeds
@@ -143,7 +149,7 @@ if __name__ == "__main__":
     ))
 
     # Images
-    images = MRI_DATA() 
+    images = MRI_DATA()
 
     # Network
     network = Network(args)
