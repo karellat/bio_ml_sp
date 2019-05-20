@@ -148,7 +148,8 @@ if __name__ == "__main__":
     val_size = int(sizes[1] * data_size)
     test_size = int(sizes[2] * data_size)
 
-    train = data.take(train_size)
+    #train = data.take(train_size)
+    train = data.take(32)
     test = data.skip(train_size)
     dev = test.skip(val_size)
     test = test.take(test_size)
@@ -156,6 +157,7 @@ if __name__ == "__main__":
     network = Network(args)
     print("Train size {}, dev size {}, test size {}".format(train_size,
         val_size, test_size)) 
+    tf.print(tf.size(train))
     network.train(train, dev, args)
 
     # Generate test set annotations, but in args.logdir to allow parallel execution.
