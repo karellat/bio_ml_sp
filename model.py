@@ -107,8 +107,6 @@ class Network:
             loss_fnc = tf.losses.SparseCategoricalCrossentropy(from_logits=True)
             for images, labels in val_batches:
                 logits = self.model.predict_on_batch(images)
-                print(logits)
-                print(loss_fnc(labels, logits))
                 validation_loss.append(loss_fnc(labels, logits).numpy())
                 validation_accuracy.append(metric(labels, logits))
 
