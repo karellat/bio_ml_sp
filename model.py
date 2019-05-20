@@ -104,9 +104,10 @@ class Network:
             validation_accuracy = []
             validation_loss = []
             metric = tf.metrics.SparseCategoricalAccuracy()
+            loss_fnc = tf.losses.SparseCategoricalCrossentropy()
             for images, labels in val_batches:
                 logits = self.model.predict_on_batch(images)
-                validation_loss.append(self.model.loss_functions(labels, logits))
+                validation_loss.append(loss_fnc(labels, logits))
                 validation_accuracy.append(metric(labels, logits))
 
             print("{}. epoch".format(e))
