@@ -95,7 +95,12 @@ class Network:
 
     def train(self, train_batches, val_batches, args):
         for e in range(args.epochs):
+            label_count = 0
+            total = 0
             for images, labels in train_batches:
+                total += len(labels)
+                label_count += np.sum(labels == 1)
+
                 loss, metrics = self.model.train_on_batch(images,
                         labels,
                         reset_metrics=False)
@@ -111,8 +116,9 @@ class Network:
                 validation_accuracy.append(metric(labels, logits))
 
             print("{}. epoch".format(e))
+            print("Positive {} of total {}".format(label_count, total))
             print("\tTraining loss : {} accuracy : {}".format(loss, metrics))
-            print("\t Validation loss : {} accuracy : {}".format(
+            print("\tValidation loss : {} accuracy : {}".format(
                 np.mean(validation_loss),
                 np.mean(validation_accuracy)))
     def predict(self, data_images, args):
@@ -165,7 +171,7 @@ if __name__ == "__main__":
     network.train(train_batches, val_batches, args)
 
     # Generate test set annotations, but in args.logdir to allow parallel execution.
-    with open(os.path.join(args.logdir, "images_test.txt"), "w", encoding="utf-8") as out_file:
-        for probs in network.predict(images.test.data["images"], args):
-            print(np.argmax(probs), file=out_file)
+#    with open(os.path.join(args.logdir, "images_test.txt"), "w", encoding="utf-8") as out_file:
+#        for probs in network.predict(images.test.data["images"], args):
+#            print(np.argmax(probs), file=out_file)
 
