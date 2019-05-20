@@ -19,6 +19,7 @@ def read_images(sizes=(0.7,0.15,0.15),batch_size=64):
     data_root = Path("./data")
     all_image_paths = list(data_root.glob('*/*/*/*'))
     all_image_paths = [str(path) for path in all_image_paths]
+    random.seed(42)
     random.shuffle(all_image_paths)
 
     image_count = len(all_image_paths)
