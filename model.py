@@ -93,7 +93,7 @@ class Network:
                 loss=tf.losses.SparseCategoricalCrossentropy(),
                 metrics=[tf.metrics.SparseCategoricalAccuracy()])
 
-    def train(self, train_batches,val_batches, args):
+    def train(self, train_batches, val_batches, args):
         for e in range(args.epochs):
             for images, labels in train_batches:
                 loss, metrics = self.model.train_on_batch(images,
@@ -162,7 +162,7 @@ if __name__ == "__main__":
 
     # Network
     network = Network(args)
-    network.train(train_batches, args)
+    network.train(train_batches, val_batches, args)
 
     # Generate test set annotations, but in args.logdir to allow parallel execution.
     with open(os.path.join(args.logdir, "images_test.txt"), "w", encoding="utf-8") as out_file:
