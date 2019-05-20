@@ -1,6 +1,8 @@
 run:
 	python3 model.py ${ARGS}
 preprocess: 
+	mkdir -p data
 	unzip Alzheimers.zip
 	unzip NonAlzheimers.zip 
-	python3 preprocess.py
+	mv -n Alzheimers ./data/
+	mv -n NonAlzheimers ./data/

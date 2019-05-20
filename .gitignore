@@ -4,3 +4,4 @@ mri-data/*
 __py*
 *.swp
 logs/*
+data/*

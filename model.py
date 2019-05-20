@@ -2,7 +2,7 @@
 import numpy as np
 import tensorflow as tf
 import tensorflow_hub as tfhub
-from mri_data import MRI_DATA
+from reader import read_images
 
 class Network:
 
@@ -47,7 +47,7 @@ class Network:
       else:
         raise Exception('Unknown cnn argument {}'.format(arg))
 
-    def __init__(self, images, args):
+    def __init__(self, args):
         input1 = tf.keras.layers.Input(shape=[299,299,3])
 
         transfer_model = tfhub.KerasLayer(
@@ -93,18 +93,14 @@ class Network:
                 loss=tf.losses.SparseCategoricalCrossentropy(),
                 metrics=[tf.metrics.SparseCategoricalAccuracy()])
 
-    def train(self, images, args):
+    def train(self, train_batches, args):
+        for e in range(args.epochs):
+            for images, labels in train_batches:
+                loss, metrics = self.model.train_on_batch(images,
+                        labels,
+                        reset_metrics=False)
 
-        self.model.fit(
-                x = images.train.data["images"],
-                y = images.train.data[args.labels],
-                batch_size=args.batch_size,
-                epochs=args.epochs,
-                validation_data=(images.dev.data["images"],
-                    images.dev.data[args.labels]),
-                callbacks=[self.tb_callback],
-                )
-
+                print(e,loss, metrics)
     def predict(self, data_images, args):
         return  self.model.predict(data_images)
 
@@ -115,7 +111,7 @@ if __name__ == "__main__":
     import re
     #  Parse arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument("--batch_size", default=128, type=int, help="Batch size.")
+    parser.add_argument("--batch_size", default=32, type=int, help="Batch size.")
     parser.add_argument("--decay", default=None, type=str,
         help="Exponentia decay")
     parser.add_argument("--learning_rate", default=0.01, type=float,
@@ -147,12 +143,12 @@ if __name__ == "__main__":
         ",".join(("{}={}".format(re.sub("(.)[^_]*_?", r"\1", key), value) for key, value in sorted(vars(args).items())))
     ))
 
-    # Images
-    images = MRI_DATA()
+    train_batches, val_batches, test_batches = read_images(
+            sizes=(0.7, 0.15, 0.15), batch_size = args.batch_size)
 
     # Network
-    network = Network(images, args)
-    network.train(images, args)
+    network = Network(args)
+    network.train(train_batches, args)
 
     # Generate test set annotations, but in args.logdir to allow parallel execution.
     with open(os.path.join(args.logdir, "images_test.txt"), "w", encoding="utf-8") as out_file:
