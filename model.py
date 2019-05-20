@@ -32,7 +32,6 @@ class Network:
       elif arg.startswith('R-'):
           assert len(arg[3:-1].split(';')) != 0
           new_layer = inputs
-          print(arg[3:-1])
           for a in arg[3:-1].split(';'):
               new_layer = get_layer(a, new_layer)
           return tf.keras.layers.Add()([new_layer, inputs])
@@ -157,7 +156,6 @@ if __name__ == "__main__":
     network = Network(args)
     print("Train size {}, dev size {}, test size {}".format(train_size,
         val_size, test_size)) 
-    tf.print(tf.size(train))
     network.train(train, dev, args)
 
     # Generate test set annotations, but in args.logdir to allow parallel execution.
