@@ -98,6 +98,7 @@ class Network:
             x=data.batch(args.batch_size),
             validation_data=val_data.batch(args.batch_size),
             epochs=args.epochs,
+            callbacks=[self.tb_callback]
         )
     def predict(self, data_images, args):
         return  self.model.predict(data_images)
