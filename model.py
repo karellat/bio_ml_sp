@@ -110,7 +110,11 @@ class Network:
             validation_loss = []
             metric = tf.metrics.SparseCategoricalAccuracy()
             loss_fnc = tf.losses.SparseCategoricalCrossentropy(from_logits=True)
+            val_label_count = 0
+            val_total = 0
             for images, labels in val_batches:
+                val_label_count += np.sum(labels)
+                val_total += len(labels)
                 logits = self.model.predict_on_batch(images)
                 validation_loss.append(loss_fnc(labels, logits).numpy())
                 validation_accuracy.append(metric(labels, logits))
@@ -118,9 +122,11 @@ class Network:
             print("{}. epoch".format(e))
             print("Positive {} of total {}".format(label_count, total))
             print("\tTraining loss : {} accuracy : {}".format(loss, metrics))
-            print("\tValidation loss : {} accuracy : {}".format(
+            print("\tValidation loss : {} accuracy : {} positive : {} totat {}".format(
                 np.mean(validation_loss),
-                np.mean(validation_accuracy)))
+                np.mean(validation_accuracy),
+                val_label_count,
+                val_total))
     def predict(self, data_images, args):
         return  self.model.predict(data_images)
 
