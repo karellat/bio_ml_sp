@@ -5,3 +5,4 @@ __py*
 *.swp
 logs/*
 data/*
+.idea*

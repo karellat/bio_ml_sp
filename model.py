@@ -47,13 +47,13 @@ class Network:
       else:
         raise Exception('Unknown cnn argument {}'.format(arg))
 
-    def __init__(self,args,train_size=4480):
+    def __init__(self,args):
         input1 = tf.keras.layers.Input(shape=[299,299,3])
 
         transfer_model = tfhub.KerasLayer(
                 args.model,
                 output_shape=[args.model_output],
-                trainable=False)(input1,training=False)
+                trainable=False)(input1, training=False)
         hidden = transfer_model
 
         for l in filter(None, args.nn.split(",")):
@@ -93,40 +93,18 @@ class Network:
                 loss=tf.losses.SparseCategoricalCrossentropy(),
                 metrics=[tf.metrics.SparseCategoricalAccuracy()])
 
-    def train(self, train_batches, val_batches, args):
-        for e in range(args.epochs):
-            label_count = 0
-            total = 0
-            for images, labels in train_batches:
-                total += len(labels)
-                label_count += np.sum(labels) 
+    def train(self, data, args):
+        images = data[0]
+        labels = data[1]
 
-                loss, metrics = self.model.train_on_batch(images,
-                        labels,
-                        reset_metrics=False)
-
-            # Validation
-            validation_accuracy = []
-            validation_loss = []
-            metric = tf.metrics.SparseCategoricalAccuracy()
-            loss_fnc = tf.losses.SparseCategoricalCrossentropy(from_logits=True)
-            val_label_count = 0
-            val_total = 0
-            for images, labels in val_batches:
-                val_label_count += np.sum(labels)
-                val_total += len(labels)
-                logits = self.model.predict_on_batch(images)
-                validation_loss.append(loss_fnc(labels, logits).numpy())
-                validation_accuracy.append(metric(labels, logits))
-
-            print("{}. epoch".format(e))
-            print("Positive {} of total {}".format(label_count, total))
-            print("\tTraining loss : {} accuracy : {}".format(loss, metrics))
-            print("\tValidation loss : {} accuracy : {} positive : {} totat {}".format(
-                np.mean(validation_loss),
-                np.mean(validation_accuracy),
-                val_label_count,
-                val_total))
+        self.model.fit(
+            x=images,
+            y=labels,
+            batch_size=args.batch_size,
+            epochs=args.epochs,
+            validation_split=0.2,
+            callbacks=self.tb_callback
+        )
     def predict(self, data_images, args):
         return  self.model.predict(data_images)
 
@@ -169,13 +147,12 @@ if __name__ == "__main__":
         ",".join(("{}={}".format(re.sub("(.)[^_]*_?", r"\1", key), value) for key, value in sorted(vars(args).items())))
     ))
 
-    train_batches, val_batches, test_batches = read_images(
-            sizes=(0.7, 0.15, 0.15), batch_size = args.batch_size)
+    data = read_images()
 
     
     # Network
     network = Network(args)
-    network.train(train_batches, val_batches, args)
+    network.train(data)
 
     # Generate test set annotations, but in args.logdir to allow parallel execution.
 #    with open(os.path.join(args.logdir, "images_test.txt"), "w", encoding="utf-8") as out_file:
