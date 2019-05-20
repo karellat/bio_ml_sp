@@ -4,4 +4,4 @@
 	* clean the solution
 	* change data output 
 	* set-up tensorboard callbacks 
-
+	* label smoothing (CategoricalCrossEntropy)_

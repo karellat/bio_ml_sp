@@ -93,17 +93,11 @@ class Network:
                 loss=tf.losses.SparseCategoricalCrossentropy(),
                 metrics=[tf.metrics.SparseCategoricalAccuracy()])
 
-    def train(self, data, args):
-        images = data[0]
-        labels = data[1]
-
+    def train(self,train_data, val_data, args):
         self.model.fit(
-            x=images,
-            y=labels,
-            batch_size=args.batch_size,
+            x=data.batch(args.batch_size),
+            validation_data=val_data,
             epochs=args.epochs,
-            validation_split=0.2,
-            callbacks=self.tb_callback
         )
     def predict(self, data_images, args):
         return  self.model.predict(data_images)
@@ -146,13 +140,21 @@ if __name__ == "__main__":
         datetime.datetime.now().strftime("%Y-%m-%d_%H%M%S"),
         ",".join(("{}={}".format(re.sub("(.)[^_]*_?", r"\1", key), value) for key, value in sorted(vars(args).items())))
     ))
+    sizes = (0.7,0.15,0.15)
+    data, data_size  = read_images()
 
-    data = read_images()
+    train_size = int(sizes[0] * data_size)
+    val_size = int(sizes[1] * data_size)
+    test_size = int(sizes[2] * data_size)
 
-    
+    train = data.take(train_size)
+    test = data.skip(train_size)
+    dev = test.skip(val_size)
+    test = test.take(test_size)
     # Network
     network = Network(args)
-    network.train(data)
+    
+    network.train(train, dev, args)
 
     # Generate test set annotations, but in args.logdir to allow parallel execution.
 #    with open(os.path.join(args.logdir, "images_test.txt"), "w", encoding="utf-8") as out_file:

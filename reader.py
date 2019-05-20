@@ -15,11 +15,11 @@ def load_and_preprocess_image(path, shape=(299,299,3)):
     image = tf.io.read_file(path)
     return preprocess_image(image, shape)
 
-def read_images():
+def read_images(seed=42):
     data_root = Path("./data")
     all_image_paths = list(data_root.glob('*/*/*/*'))
     all_image_paths = [str(path) for path in all_image_paths]
-    random.seed(42)
+    random.seed(seed)
     random.shuffle(all_image_paths)
 
     label_names = sorted(item.name for item in data_root.glob('*/') if item.is_dir())
@@ -32,8 +32,6 @@ def read_images():
             num_parallel_calls=tf.data.experimental.AUTOTUNE)
     label_ds = tf.data.Dataset.from_tensor_slices(tf.cast(all_image_labels, tf.int64))
 
-
     image_label_ds = tf.data.Dataset.zip((image_ds, label_ds))
-    image_label_ds = image_label_ds.prefetch(buffer_size=tf.data.experimental.AUTOTUNE)
-
-    return image_label_ds
+    image_count = len(all_image_paths)
+    return image_label_ds, image_count
