@@ -106,8 +106,7 @@ class Network:
             metric = tf.metrics.SparseCategoricalAccuracy()
             for images, labels in val_batches:
                 logits = self.model.predict_on_batch(images)
-                validation_loss.append(self.model.loss_functions(labels,
-                    logits))
+                validation_loss.append(self.model.loss_functions(labels, logits))
                 validation_accuracy.append(metric(labels, logits))
 
             print("{}. epoch".format(e))
