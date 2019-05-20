@@ -47,7 +47,7 @@ class Network:
       else:
         raise Exception('Unknown cnn argument {}'.format(arg))
 
-    def __init__(self, args):
+    def __init__(self,args,train_size=4480):
         input1 = tf.keras.layers.Input(shape=[299,299,3])
 
         transfer_model = tfhub.KerasLayer(
@@ -73,14 +73,14 @@ class Network:
         elif args.decay == 'polynomial':
             learning_rate = tf.optimizers.schedules.PolynomialDecay(
             args.learning_rate,
-            decay_steps=args.epochs * images.train.size / args.batch_size,
+            decay_steps=args.epochs * train_size / args.batch_size,
             end_learning_rate=args.learning_rate_final)
 
         elif args.decay == 'exponential':
             learning_rate = tf.optimizers.schedules.ExponentialDecay(
             args.learning_rate,
             decay_rate=args.learning_rate_final / args.learning_rate,
-            decay_steps=args.epochs * images.train.size / args.batch_size)
+            decay_steps=args.epochs * train_size / args.batch_size)
         else:
             learning_rate = None
 
@@ -172,6 +172,7 @@ if __name__ == "__main__":
     train_batches, val_batches, test_batches = read_images(
             sizes=(0.7, 0.15, 0.15), batch_size = args.batch_size)
 
+    
     # Network
     network = Network(args)
     network.train(train_batches, val_batches, args)
