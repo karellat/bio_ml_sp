@@ -154,7 +154,8 @@ if __name__ == "__main__":
     test = test.take(test_size)
     # Network
     network = Network(args)
-    
+    print("Train size {}, dev size {}, test size {}".format(train_size,
+        val_size, test_size) 
     network.train(train, dev, args)
 
     # Generate test set annotations, but in args.logdir to allow parallel execution.
