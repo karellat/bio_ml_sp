@@ -100,7 +100,7 @@ class Network:
                         labels,
                         reset_metrics=False)
 
-                print(e,loss, metrics)
+            print(e,loss, metrics)
     def predict(self, data_images, args):
         return  self.model.predict(data_images)
 
