@@ -99,7 +99,7 @@ class Network:
             total = 0
             for images, labels in train_batches:
                 total += len(labels)
-                label_count += np.sum(labels == 1)
+                label_count += np.sum(labels) 
 
                 loss, metrics = self.model.train_on_batch(images,
                         labels,
