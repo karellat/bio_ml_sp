@@ -96,7 +96,7 @@ class Network:
     def train(self,train_data, val_data, args):
         self.model.fit(
             x=data.batch(args.batch_size),
-            validation_data=val_data,
+            validation_data=val_data.batch(args.batch_size),
             epochs=args.epochs,
         )
     def predict(self, data_images, args):
