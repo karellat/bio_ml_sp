@@ -29,7 +29,7 @@ class Network:
           return tf.keras.layers.AveragePooling2D(
                   int(C_args[1]),
                   int(C_args[2]),
-                  padding=C_args[3])(new_layer)
+                  padding=C_args[3])(inputs)
       elif arg.startswith('M-'):
          return tf.keras.layers.MaxPool2D(
              int(C_args[1]),
