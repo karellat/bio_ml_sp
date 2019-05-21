@@ -94,7 +94,7 @@ class Network:
 
         self.model.compile(
                 optimizer=tf.keras.optimizers.Adam(learning_rate=learning_rate),
-                loss=tf.losses.CategoricalCrossentropy(from_logis=True, label_smoothing=args.smoothing),
+                loss=tf.losses.CategoricalCrossentropy(from_logits=True, label_smoothing=args.smoothing),
                 metrics=[tf.metrics.SparseCategoricalAccuracy()])
 
     def train(self,train_data, val_data, args):
