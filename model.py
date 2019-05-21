@@ -150,7 +150,7 @@ if __name__ == "__main__":
     #train = data.take(train_size)
     train = data.take(train_size)
     test = data.skip(train_size)
-    dev = test.skip(val_size)
+    dev = test.skip(test_size)
     test = test.take(test_size)
     # Network
     network = Network(args)
