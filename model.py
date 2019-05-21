@@ -29,7 +29,7 @@ class Network:
           return tf.keras.layers.AveragePooling2D(
                   int(C_args[1]),
                   int(C_args[2]),
-                  padding=C_args[3])(new_layer)
+                  padding=C_args[3])(inputs)
       elif arg.startswith('M-'):
          return tf.keras.layers.MaxPool2D(
              int(C_args[1]),
@@ -94,7 +94,7 @@ class Network:
 
         self.model.compile(
                 optimizer=tf.keras.optimizers.Adam(learning_rate=learning_rate),
-                loss=tf.losses.SparseCategoricalCrossentropy(),
+                loss=tf.losses.CategoricalCrossentropy(from_logis=True, label_smoothing=args.smoothing),
                 metrics=[tf.metrics.SparseCategoricalAccuracy()])
 
     def train(self,train_data, val_data, args):
@@ -115,6 +115,7 @@ if __name__ == "__main__":
     #  Parse arguments
     parser = argparse.ArgumentParser()
     parser.add_argument("--batch_size", default=8, type=int, help="Batch size.")
+    parser.add_argument("--smoothing", default=0.1, type=float)
     parser.add_argument("--decay", default=None, type=str,
         help="Exponentia decay")
     parser.add_argument("--learning_rate", default=0.01, type=float,
