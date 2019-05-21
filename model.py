@@ -25,6 +25,11 @@ class Network:
                   use_bias=False)(inputs)
           new_layer = tf.keras.layers.BatchNormalization()(new_layer)
           return tf.keras.layers.Activation("relu")(new_layer)
+      elif arg.startswith('AV-'):
+          return tf.keras.layers.AveragePooling2D(
+                  int(C_args[1]),
+                  int(C_args[2]),
+                  padding=C_args[3])(new_layer)
       elif arg.startswith('M-'):
          return tf.keras.layers.MaxPool2D(
              int(C_args[1]),
