@@ -59,7 +59,6 @@ class Network:
                 output_shape=[2048],#args.model_output],
                 trainable=False)(input1, training=False)
         hidden = transfer_model
-        hidden = tf.keras.layers.Reshape((8,8,32))(hidden)
 
         for l in filter(None, args.nn.split(",")):
             hidden = self.get_layer(l, hidden)
