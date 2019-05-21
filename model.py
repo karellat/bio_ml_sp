@@ -118,7 +118,7 @@ if __name__ == "__main__":
         help="Final learning rate")
     parser.add_argument("--epochs", default=10, type=int, help="Number of epochs.")
     parser.add_argument("--threads", default=1, type=int, help="Maximum number of threads to use.")
-    parser.add_argument("--nn", default="",type=str, help="Shared convolution layers")
+    parser.add_argument("--nn", default="Dr,D-256",type=str, help="Shared convolution layers")
     parser.add_argument("--model",
             default="https://tfhub.dev/google/tf2-preview/inception_v3/feature_vector/3",
             type=str, help="Transfer learning model")
