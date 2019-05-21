@@ -44,6 +44,11 @@ class Network:
           return tf.keras.layers.Dense(
              int(C_args[1]),
               activation="relu")(inputs)
+      elif arg.startswith('DB-'):
+          new_layer = tf.keras.layers.Dense(
+                  int(C_args[1]), use_bias=False)(inputs)
+          new_layer = tf.keras.layers.BatchNormalization()(new_layer)
+          return tf.keras.layers.Activation("relu")(new_layer)
       elif arg.startswith('F'):
           return tf.keras.layers.Flatten()(inputs)
       elif arg.startswith('Dr'):
@@ -94,8 +99,8 @@ class Network:
 
         self.model.compile(
                 optimizer=tf.keras.optimizers.Adam(learning_rate=learning_rate),
-                loss=tf.losses.SparseCategoricalCrossentropy(),
-                metrics=[tf.metrics.SparseCategoricalAccuracy()])
+                loss=tf.losses.CategoricalCrossentropy(from_logits=True, label_smoothing=args.smoothing),
+                metrics=[tf.metrics.CategoricalAccuracy()])
 
     def train(self,train_data, val_data, args):
         self.model.fit(
@@ -115,6 +120,7 @@ if __name__ == "__main__":
     #  Parse arguments
     parser = argparse.ArgumentParser()
     parser.add_argument("--batch_size", default=8, type=int, help="Batch size.")
+    parser.add_argument("--smoothing", default=0.1, type=float)
     parser.add_argument("--decay", default=None, type=str,
         help="Exponentia decay")
     parser.add_argument("--learning_rate", default=0.01, type=float,

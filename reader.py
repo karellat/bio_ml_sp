@@ -30,7 +30,9 @@ def read_images(seed=42):
     path_ds = tf.data.Dataset.from_tensor_slices(all_image_paths)
     image_ds = path_ds.map(load_and_preprocess_image,
             num_parallel_calls=tf.data.experimental.AUTOTUNE)
-    label_ds = tf.data.Dataset.from_tensor_slices(tf.cast(all_image_labels, tf.int64))
+    label_ds = tf.data.Dataset.from_tensor_slices(tf.one_hot(tf.cast(all_image_labels,
+        tf.int64), 2))
+    
 
     image_label_ds = tf.data.Dataset.zip((image_ds, label_ds))
     image_count = len(all_image_paths)
