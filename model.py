@@ -116,7 +116,7 @@ if __name__ == "__main__":
         help="Initial learning rate")
     parser.add_argument("--learning_rate_final", default=None, type=float,
         help="Final learning rate")
-    parser.add_argument("--epochs", default=10, type=int, help="Number of epochs.")
+    parser.add_argument("--epochs", default=30, type=int, help="Number of epochs.")
     parser.add_argument("--threads", default=1, type=int, help="Maximum number of threads to use.")
     parser.add_argument("--nn", default="Dr,D-256",type=str, help="Shared convolution layers")
     parser.add_argument("--model",
