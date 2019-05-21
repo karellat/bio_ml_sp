@@ -99,13 +99,13 @@ class Network:
 
     def train(self,train_data, val_data, args):
         self.model.fit(
-            x=data.batch(args.batch_size),
+            x=train_data.batch(args.batch_size),
             validation_data=val_data.batch(args.batch_size),
             epochs=args.epochs,
             callbacks=[self.tb_callback]
         )
     def predict(self, data_images, args):
-        return  self.model.predict(data_images)
+        return  self.model.predict(x = data_images.batch(args.batch_size))
 
 if __name__ == "__main__":
     import argparse
@@ -114,16 +114,16 @@ if __name__ == "__main__":
     import re
     #  Parse arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument("--batch_size", default=32, type=int, help="Batch size.")
+    parser.add_argument("--batch_size", default=8, type=int, help="Batch size.")
     parser.add_argument("--decay", default=None, type=str,
         help="Exponentia decay")
     parser.add_argument("--learning_rate", default=0.01, type=float,
         help="Initial learning rate")
     parser.add_argument("--learning_rate_final", default=None, type=float,
         help="Final learning rate")
-    parser.add_argument("--epochs", default=10, type=int, help="Number of epochs.")
+    parser.add_argument("--epochs", default=30, type=int, help="Number of epochs.")
     parser.add_argument("--threads", default=1, type=int, help="Maximum number of threads to use.")
-    parser.add_argument("--nn", default="",type=str, help="Shared convolution layers")
+    parser.add_argument("--nn", default="Dr,D-256",type=str, help="Shared convolution layers")
     parser.add_argument("--model",
             default="https://tfhub.dev/google/tf2-preview/inception_v3/feature_vector/3",
             type=str, help="Transfer learning model")
@@ -153,9 +153,9 @@ if __name__ == "__main__":
     test_size = int(sizes[2] * data_size)
 
     #train = data.take(train_size)
-    train = data.take(32)
+    train = data.take(train_size)
     test = data.skip(train_size)
-    dev = test.skip(val_size)
+    dev = test.skip(test_size)
     test = test.take(test_size)
     # Network
     network = Network(args)
@@ -164,6 +164,14 @@ if __name__ == "__main__":
     network.train(train, dev, args)
 
     # Generate test set annotations, but in args.logdir to allow parallel execution.
+    logs = network.model.evaluate(x=test.batch(args.batch_size))
+    print(logs)
+    # evaluator = tf.keras.metrics.Accuracy()
+    # print('Predicting')
+    # predictions = network.predict(test, args)
+    # print('Evaluating')
+    # evaluator.update_state(test, np.array(map(lambda prediction: np.argmax(prediction), predictions)))
+    # print(evaluator.result().numpy())
 #    with open(os.path.join(args.logdir, "images_test.txt"), "w", encoding="utf-8") as out_file:
 #        for probs in network.predict(images.test.data["images"], args):
 #            print(np.argmax(probs), file=out_file)
