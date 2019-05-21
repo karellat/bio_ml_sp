@@ -160,7 +160,7 @@ if __name__ == "__main__":
 
     # Generate test set annotations, but in args.logdir to allow parallel execution.
     evaluator = tf.keras.metrics.Accuracy()
-    predictions = network.predict(map(lambda pair: pair[0], test))
+    predictions = network.predict(map(lambda pair: pair[0], test), args)
     evaluator.update_state(map(lambda pair: pair[1], test), map(lambda prediction: np.argmax(prediction), predictions))
         
 #    with open(os.path.join(args.logdir, "images_test.txt"), "w", encoding="utf-8") as out_file:
