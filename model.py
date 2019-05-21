@@ -100,7 +100,7 @@ class Network:
             callbacks=[self.tb_callback]
         )
     def predict(self, data_images, args):
-        return  self.model.predict(data_images)
+        return  self.model.predict(x = data_images)
 
 if __name__ == "__main__":
     import argparse
