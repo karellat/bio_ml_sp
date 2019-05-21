@@ -94,7 +94,7 @@ class Network:
 
     def train(self,train_data, val_data, args):
         self.model.fit(
-            x=data.batch(args.batch_size),
+            x=train_data.batch(args.batch_size),
             validation_data=val_data.batch(args.batch_size),
             epochs=args.epochs,
             callbacks=[self.tb_callback]
@@ -148,10 +148,10 @@ if __name__ == "__main__":
     test_size = int(sizes[2] * data_size)
 
     #train = data.take(train_size)
-    train = list(data.take(train_size))
+    train = data.take(train_size)
     test = data.skip(train_size)
-    dev = list(test.skip(val_size))
-    test = list(test.take(test_size))
+    dev = test.skip(val_size)
+    test = test.take(test_size)
     # Network
     network = Network(args)
     print("Train size {}, dev size {}, test size {}".format(train_size,
@@ -161,11 +161,9 @@ if __name__ == "__main__":
     # Generate test set annotations, but in args.logdir to allow parallel execution.
     evaluator = tf.keras.metrics.Accuracy()
     print('Predicting')
-    data = np.array(list(map(lambda pair: pair[0], test)))
-    print(len(data))
-    predictions = network.predict(data, args)
+    predictions = network.predict(test, args)
     print('Evaluating')
-    evaluator.update_state(np.array(map(lambda pair: pair[1], test)), np.array(map(lambda prediction: np.argmax(prediction), predictions)))
+    evaluator.update_state(test, np.array(map(lambda prediction: np.argmax(prediction), predictions)))
     print(evaluator.result().numpy())
 #    with open(os.path.join(args.logdir, "images_test.txt"), "w", encoding="utf-8") as out_file:
 #        for probs in network.predict(images.test.data["images"], args):
