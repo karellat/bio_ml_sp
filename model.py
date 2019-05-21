@@ -148,7 +148,7 @@ if __name__ == "__main__":
     test_size = int(sizes[2] * data_size)
 
     #train = data.take(train_size)
-    train = data.take(32)
+    train = data.take(train_size)
     test = data.skip(train_size)
     dev = test.skip(val_size)
     test = test.take(test_size)
