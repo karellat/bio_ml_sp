@@ -116,7 +116,7 @@ if __name__ == "__main__":
         help="Initial learning rate")
     parser.add_argument("--learning_rate_final", default=None, type=float,
         help="Final learning rate")
-    parser.add_argument("--epochs", default=30, type=int, help="Number of epochs.")
+    parser.add_argument("--epochs", default=1, type=int, help="Number of epochs.")
     parser.add_argument("--threads", default=1, type=int, help="Maximum number of threads to use.")
     parser.add_argument("--nn", default="Dr,D-256",type=str, help="Shared convolution layers")
     parser.add_argument("--model",
@@ -159,6 +159,10 @@ if __name__ == "__main__":
     network.train(train, dev, args)
 
     # Generate test set annotations, but in args.logdir to allow parallel execution.
+    evaluator = tf.keras.metrics.Accuracy()
+    predictions = network.predict(map(lambda pair: pair[0], test))
+    evaluator.update_state(map(lambda pair: pair[1], test), map(lambda prediction: np.argmax(prediction), predictions))
+        
 #    with open(os.path.join(args.logdir, "images_test.txt"), "w", encoding="utf-8") as out_file:
 #        for probs in network.predict(images.test.data["images"], args):
 #            print(np.argmax(probs), file=out_file)
