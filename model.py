@@ -149,8 +149,9 @@ if __name__ == "__main__":
 
     #train = data.take(train_size)
     train = data.take(train_size)
-    test = data.skip(train_size).take(test_size)
-    dev = test.skip(train_size + test_size).take(val_size)
+    test = data.skip(train_size)
+    dev = test.skip(test_size)
+    test = test.take(test_size)
     # Network
     network = Network(args)
     print("Train size {}, dev size {}, test size {}".format(train_size,
