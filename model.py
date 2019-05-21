@@ -109,14 +109,14 @@ if __name__ == "__main__":
     import re
     #  Parse arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument("--batch_size", default=32, type=int, help="Batch size.")
+    parser.add_argument("--batch_size", default=8, type=int, help="Batch size.")
     parser.add_argument("--decay", default=None, type=str,
         help="Exponentia decay")
     parser.add_argument("--learning_rate", default=0.01, type=float,
         help="Initial learning rate")
     parser.add_argument("--learning_rate_final", default=None, type=float,
         help="Final learning rate")
-    parser.add_argument("--epochs", default=1, type=int, help="Number of epochs.")
+    parser.add_argument("--epochs", default=10, type=int, help="Number of epochs.")
     parser.add_argument("--threads", default=1, type=int, help="Maximum number of threads to use.")
     parser.add_argument("--nn", default="Dr,D-256",type=str, help="Shared convolution layers")
     parser.add_argument("--model",
