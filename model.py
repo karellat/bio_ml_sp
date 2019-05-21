@@ -56,7 +56,7 @@ class Network:
 
         transfer_model = tfhub.KerasLayer(
                 args.model,
-                output_shape=[args.model_output],
+                output_shape=[8,8,1536],#args.model_output],
                 trainable=False)(input1, training=False)
         hidden = transfer_model
 
