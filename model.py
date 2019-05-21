@@ -44,6 +44,11 @@ class Network:
           return tf.keras.layers.Dense(
              int(C_args[1]),
               activation="relu")(inputs)
+      elif arg.startwith('DB-'):
+          new_layer = tf.keras.layers.Dense(
+                  int(C_args[1], use_bias=False))(inputs)
+          new_layer = tf.keras.layers.BatchNormalization()(new_layer)
+          return tf.keras.layers.Activation("relu")(new_layer)
       elif arg.startswith('F'):
           return tf.keras.layers.Flatten()(inputs)
       elif arg.startswith('Dr'):
